@@ -7,7 +7,6 @@ lib/async_redis_model/persistence.rb
 lib/async_redis_model/serialization.rb
 lib/async_redis_model.rb
 Manifest.txt
-PostInstall.txt
 Rakefile
 README.rdoc
 script/console
