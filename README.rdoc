@@ -26,16 +26,15 @@ Redis object mapper that runs inside the EventMachine reactor.
       if resp
         Person.index(:zip, 94107).members do |resp|
           puts resp.inspect
-          EventMachine::stop_event_loop
+          found_person = Person.new(:id => "benlm")
+          found_person.load do |resp|
+            # now your attributes have loaded.
+            # if the record was not found you will get an
+            # AsyncRedisModel::RecordNotFoundError exception
+            EventMachine::stop_event_loop
+          end
         end
       end
-    end
-    
-    found_person = Person.new(:id => "benlm")
-    found_person.load do |resp|
-      # now your attributes have loaded.
-      # if the record was not found you will get an
-      # AsyncRedisModel::RecordNotFoundError exception
     end
   end
 
