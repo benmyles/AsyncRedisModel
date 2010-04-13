@@ -2,6 +2,7 @@ module AsyncRedisModel
   class RecordNotNewError   < RuntimeError; end
   class RecordIsNewError    < RuntimeError; end
   class RecordNotValidError < RuntimeError; end
+  class RecordNotFoundError < RuntimeError; end
   
   module Persistence
     def self.included(base)
@@ -61,21 +62,24 @@ module AsyncRedisModel
       
       def load(&blk)
         return nil unless id
-        AsyncRedisModel.client.mget(*attribute_keys) do |resp|
-          if resp && resp.is_a?(Array)
-            @attributes ||= {}
-            @orig_attributes ||= {}
-            attribute_names.each_with_index do |name, i|
-              @attributes[name.to_sym] = decoded_value(resp[i])
-              begin
-                @orig_attributes[name.to_sym] = @attributes[name.to_sym].dup
-              rescue TypeError => e
-                @orig_attributes[name.to_sym] = @attributes[name.to_sym]
+        self.class.all_index.includes?(id) do |resp|
+          raise(AsyncRedisModel::RecordNotFoundError, id.to_s) unless resp
+          AsyncRedisModel.client.mget(*attribute_keys) do |resp|
+            if resp && resp.is_a?(Array)
+              @attributes ||= {}
+              @orig_attributes ||= {}
+              attribute_names.each_with_index do |name, i|
+                @attributes[name.to_sym] = decoded_value(resp[i])
+                begin
+                  @orig_attributes[name.to_sym] = @attributes[name.to_sym].dup
+                rescue TypeError => e
+                  @orig_attributes[name.to_sym] = @attributes[name.to_sym]
+                end
               end
+              blk.call(true)
+            else
+              blk.call(false)
             end
-            blk.call(true)
-          else
-            blk.call(false)
           end
         end
       end

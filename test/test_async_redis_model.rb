@@ -5,6 +5,28 @@ class TestAsyncRedisModel < Test::Unit::TestCase
   def setup
   end
   
+  def test_load
+    Thread.new do
+      EventMachine::run do
+        AsyncRedisModel.client.flushdb do |resp|
+          p = Person.new(:id => "benlm", :name => "Ben", :zip => 94107)
+          p.create do |resp|
+            assert resp
+            assert_raise(AsyncRedisModel::RecordNotFoundError) do
+              p = Person.new(:id => "idontexist")
+              p.load { |resp| }
+            end
+            p = Person.new(:id => "benlm")
+            p.load do |resp|
+              assert_equal 94107, p.zip
+              EventMachine::stop_event_loop
+            end
+          end
+        end
+      end
+    end
+  end
+  
   def test_save
     Thread.new do
       EventMachine::run do
