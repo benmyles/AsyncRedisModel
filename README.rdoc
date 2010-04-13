@@ -1,32 +1,53 @@
 = async_redis_model
 
-* http://github.com/#{github_username}/#{project_name}
+* http://github.com/benmyles/AsyncRedisModel
 
 == DESCRIPTION:
 
-FIX (describe your package)
+Redis object mapper that runs inside the EventMachine reactor.
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* Experimental, incomplete.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+class Person < AsyncRedisModel::Base
+  define_attribute :name
+  define_attribute :age
+  define_attribute :zip
+  
+  define_index_on  :zip
+end
+
+EventMachine::run do
+  p = Person.new(:id => "benlm", :name => "Ben", :zip => 94107)
+  p.create do |resp|
+    if resp
+      Person.index(:zip, 94107).members do |resp|
+        puts resp.inspect
+        EventMachine::stop_event_loop
+      end
+    end
+  end
+end
+
+See tests for more examples.
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* Ruby 1.9+ (probably)
+* ActiveSupport & ActiveModel 3.0.0.beta2
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* No gem yet. Coming soon. See code under lib.
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2010 FIXME full name
+Copyright (c) 2010 Ben Myles
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
