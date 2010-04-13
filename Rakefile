@@ -14,7 +14,8 @@ $hoe = Hoe.spec 'async_redis_model' do
   self.developer 'Ben Myles', 'ben.myles@gmail.com'
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [['activemodel','= 3.0.0.beta2'],
-                             ['activesupport','= 3.0.0.beta2']]
+                             ['activesupport','= 3.0.0.beta2'],
+                             ['eventmachine', '= 0.12.10']]
 end
 
 require 'newgem/tasks'

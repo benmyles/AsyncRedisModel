@@ -38,6 +38,7 @@ See tests for more examples.
 
 * Ruby 1.9+ (probably)
 * ActiveSupport & ActiveModel 3.0.0.beta2
+* EventMachine 0.12.10
 
 == INSTALL:
 
