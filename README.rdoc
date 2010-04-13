@@ -12,25 +12,25 @@ Redis object mapper that runs inside the EventMachine reactor.
 
 == SYNOPSIS:
 
-class Person < AsyncRedisModel::Base
-  define_attribute :name
-  define_attribute :age
-  define_attribute :zip
+  class Person < AsyncRedisModel::Base
+    define_attribute :name
+    define_attribute :age
+    define_attribute :zip
   
-  define_index_on  :zip
-end
+    define_index_on  :zip
+  end
 
-EventMachine::run do
-  p = Person.new(:id => "benlm", :name => "Ben", :zip => 94107)
-  p.create do |resp|
-    if resp
-      Person.index(:zip, 94107).members do |resp|
-        puts resp.inspect
-        EventMachine::stop_event_loop
+  EventMachine::run do
+    p = Person.new(:id => "benlm", :name => "Ben", :zip => 94107)
+    p.create do |resp|
+      if resp
+        Person.index(:zip, 94107).members do |resp|
+          puts resp.inspect
+          EventMachine::stop_event_loop
+        end
       end
     end
   end
-end
 
 See tests for more examples.
 
